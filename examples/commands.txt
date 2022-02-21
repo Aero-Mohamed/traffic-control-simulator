@@ -1,0 +1,2 @@
+-> Command to run duaIterate to generate the optimum path between trip edges
+python.exe .\tools\duaIterate.py -n .\network\cu.net.xml -r .\outputs\trips.trips.xml --begin 0 --end 100
