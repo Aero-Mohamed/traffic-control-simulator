@@ -1,11 +1,25 @@
 from distutils.command.clean import clean
 from lib2to3.pgen2.literals import simple_escapes
-import marshal
+import sys
+import subprocess
 import sumolib
 
-## Inputs
+# Inputs
 NET_FILE = './network/cu.net.xml';
 OUTPUT_TRIP_FILE = './outputs/trips.trips.xml';
+# DUArouter Inputs ✏ 
+DUAROUTER = sumolib.checkBinary('duarouter');
+OUTPUT_ROUTE_FILE = './outputs/routes.rou.xml';
+DUAROUTER_ARGS = [DUAROUTER, 
+    '--net-file', NET_FILE,
+    '--route-files', OUTPUT_TRIP_FILE,
+    '--begin', str(0),
+    '--end', str(3600), # An Hour 
+    '-o', OUTPUT_ROUTE_FILE,
+    '--ignore-errors',
+    '--no-step-log',
+    '--no-warnings',
+];
 
 ## Setup Manually for now 🙂 
 origin_destination_matrix = [
@@ -69,6 +83,12 @@ def main():
             fouttrips.write('    <trip id="%s" depart="%.2f"%s/>\n' % (
                         label, depart, combined_attrs))
         fouttrips.write("</routes>\n");
+
+    print("calling DUA-router ⚙ "); 
+    # print(DUAROUTER_ARGS);
+    sys.stdout.flush();
+    subprocess.run(DUAROUTER_ARGS);
+    sys.stdout.flush();
 
     print('Completed ... ✈ '); 
 
