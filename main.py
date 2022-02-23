@@ -1,8 +1,10 @@
 from distutils.command.clean import clean
 from lib2to3.pgen2.literals import simple_escapes
+from re import L
 import sys
 import subprocess
 import sumolib
+import traci
 
 # Inputs
 NET_FILE = './network/cu.net.xml';
@@ -21,6 +23,14 @@ DUAROUTER_ARGS = [DUAROUTER,
     '--no-warnings',
 ];
 
+
+# Simulation Inputs
+MAX_SIMULATION_STEPS    = 3600;
+STEP                    = 1;
+SUBSCRIBED_TARGET_VEH   = False;
+
+
+
 ## Setup Manually for now 🙂 
 origin_destination_matrix = [
     [
@@ -37,6 +47,32 @@ origin_destination_matrix = [
     ]
     
 ];
+
+def tuple2Arr(tup):
+    arr = [];
+    arr.append(tup);
+    return [x for xs in arr for x in xs];
+
+
+def generateVehicleProperityKeysToRetrive():
+    keys = [
+        0x40,      # Speed - getSpeed
+        0x72,      # Acceleration - getAcceleration
+        0x42,      # Position 2D - getPosition
+        0x50,      # Current Road ID - getRoadID
+        0x51,      # Current Lane ID - getLaneID
+        0x4f,      # Vehicle Type - getTypeID
+        0x69,      # Current edge Index - getRouteIndex
+        0x54,      # string cell array of the edges the vehicles route is made of - getRoute
+        0x56,      # Position in the lane - getLanePosition
+        0x84,      # The distance, the vehicle has already driven [m] - getDistance
+        0x4b,      # vehicles signales - getSignals
+        0x65,      # fuel consumption - getFuelConsumption
+        0x71,      # electricity consumption - getElectricityConsumption
+        0xb2,      # information about the wish to use subsequent lanes - getBestLanes
+        0x45          # getColor   
+    ];
+    return keys;
 
 def closestEdge(edges):
     closestEdge = edges[0];
@@ -69,8 +105,16 @@ def getODEdges(net, ODM): # Origin Destination Matrix 🚌
         
 
 def main():
-
+    SUBSCRIBED_TARGET_VEH = False;
+    """
+        Parse the Network file
+    """
     net = sumolib.net.readNet(NET_FILE);
+    """
+        1. convert origin-destination (lon, lat) matrix to be in term
+        of edge identifier origin-destination pairs
+        2. Generate trip file
+    """
     trips = getODEdges(net, origin_destination_matrix);
     with open(OUTPUT_TRIP_FILE, 'w') as fouttrips:
         sumolib.writeXMLHeader(fouttrips, "$Id$", "routes");
@@ -84,14 +128,46 @@ def main():
                         label, depart, combined_attrs))
         fouttrips.write("</routes>\n");
 
+
+    """
+        Run The DUA-router to generate trip route
+        In term of edges identifires
+    """
     print("calling DUA-router ⚙ "); 
     # print(DUAROUTER_ARGS);
     sys.stdout.flush();
     subprocess.run(DUAROUTER_ARGS);
     sys.stdout.flush();
 
+
+    """
+        Run Simulation & Extract (Lon & Lat) of the Trip
+    """
+    traci.start(["sumo", "-c", "network/simulation.sumo.cfg", "--start"]);
+
+    while(traci.simulation.getMinExpectedNumber() > 0):
+        traci.simulationStep();
+        targetVeh = "Trip-0";
+
+        vehicles = tuple2Arr(traci.vehicle.getIDList());
+        if( targetVeh in vehicles):
+            
+            if(not SUBSCRIBED_TARGET_VEH):
+                traci.vehicle.subscribe(targetVeh, generateVehicleProperityKeysToRetrive());
+                SUBSCRIBED_TARGET_VEH = True;
+
+            targetVehicleHandle = traci.vehicle.getSubscriptionResults(targetVeh);
+            position = targetVehicleHandle[0x42];
+            [lon, lat] = traci.simulation.convertGeo(position[0], position[1]);
+
+            """
+                Send to Database server
+            """
+            print("Lon: ", lon, ', Lat: ', lat);
+    
+    traci.close();
+
     print('Completed ... ✈ '); 
 
-
 if __name__ == "__main__":
-    main()
+    main();
