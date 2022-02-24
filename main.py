@@ -109,12 +109,14 @@ def main():
     """
         Parse the Network file
     """
+    print("Reading Network ⚙ ");
     net = sumolib.net.readNet(NET_FILE);
     """
         1. convert origin-destination (lon, lat) matrix to be in term
         of edge identifier origin-destination pairs
         2. Generate trip file
     """
+    print("Generating Trips ⚙ ");
     trips = getODEdges(net, origin_destination_matrix);
     with open(OUTPUT_TRIP_FILE, 'w') as fouttrips:
         sumolib.writeXMLHeader(fouttrips, "$Id$", "routes");
@@ -163,7 +165,7 @@ def main():
             """
                 Send to Database server
             """
-            print("Lon: ", lon, ', Lat: ', lat);
+            print("LatLng(", lat, ', ', lon, '),');
     
     traci.close();
 
