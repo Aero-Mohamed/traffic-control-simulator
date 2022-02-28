@@ -1,14 +1,19 @@
-from distutils.command.clean import clean
-from lib2to3.pgen2.literals import simple_escapes
-from re import L
 import sys
 import subprocess
+import os
+if 'SUMO_HOME' in os.environ:
+    sys.path.append(os.path.join(os.environ['SUMO_HOME'], 'tools'));
+    
 import sumolib
 import traci
+import mysql.connector
+import requests
+
 
 # Inputs
 NET_FILE = './network/cu.net.xml';
 OUTPUT_TRIP_FILE = './outputs/trips.trips.xml';
+
 # DUArouter Inputs ✏ 
 DUAROUTER = sumolib.checkBinary('duarouter');
 OUTPUT_ROUTE_FILE = './outputs/routes.rou.xml';
@@ -32,21 +37,85 @@ SUBSCRIBED_TARGET_VEH   = False;
 
 
 ## Setup Manually for now 🙂 
+## Defult for the program. 🍭
 origin_destination_matrix = [
-    [
-        ## Origin
-        {
-            "lon" : 31.210914,
-            "lat" : 30.026797
-        },
-        ## Destination
-        {
-            "lon"   : 31.202546,
-            "lat"   : 30.029341
-        }
-    ]
-    
+    # [
+    #     ## Origin
+    #     {
+    #         "lon" : 31.210914,
+    #         "lat" : 30.026797
+    #     },
+    #     ## Destination
+    #     {
+    #         "lon"   : 31.202546,
+    #         "lat"   : 30.029341
+    #     }
+    # ]
 ];
+
+
+def get_options(args=None):
+    optParser = sumolib.options.ArgumentParser(description="Generate Route based on origin-destination points.")
+    # Updated
+    optParser.add_argument("--origin", type=str,help="Origin lat,lon");
+    optParser.add_argument("--destination", type=str,help="Destination lat,lon");
+    options = optParser.parse_args(args=args);
+    return options
+
+
+def connectDB():
+    db = mysql.connector.connect(
+        host="localhost",
+        port=3307, 
+        user="root", 
+        password="",
+        database="skywire"
+    );
+    return db;
+
+
+def getCurrentTrips(db):
+    cr = db.cursor();
+    cr.execute("SELECT id, user_id, astext(origin) as origin, astext(destination) as destination FROM trips where arrived=0");
+    res = cr.fetchall();
+    return res;
+
+def formatedTrips(res):
+    for x in res:
+        origin = x[2].replace('POINT(',"").replace(")", "").split(" ");
+        destination = x[3].replace('POINT(',"").replace(")", "").split(" ");
+
+        origin_destination_matrix.append([
+            # Origin
+            {
+                "lat" : origin[0],
+                "lon" : origin[1],
+            },
+            ## Destination
+            {
+                "lat" : destination[0],
+                "lon" : destination[1],
+            }
+        ]);
+        return x[1]; # Return the first Trip ID
+
+def updateTripRoute(db, trip_id, tripRoute):
+    cleanTripRouteTable(db, trip_id);
+    cr = db.cursor();
+    cr.executemany("INSERT INTO trip_routes (trip_id, position) VALUES (%s, ST_PointFromText(%s))", tripRoute);
+    db.commit();
+    print(cr.rowcount, "was inserted. 🙂 "); 
+
+
+def cleanTripRouteTable(db, trip_id):
+    print("Cleaning Trip Infromation From DB ⚙ ");
+    cr = db.cursor();
+    cr.execute("DELETE FROM trip_routes WHERE trip_id = "+str(trip_id)+"");
+    db.commit();
+
+def nofityServer():
+    print("Notifying The Server ⚙ ");
+    res = requests.post("http://skywire.com/api/v1/notifyClients", {});
 
 def tuple2Arr(tup):
     arr = [];
@@ -104,7 +173,7 @@ def getODEdges(net, ODM): # Origin Destination Matrix 🚌
     return origin_destination_trips_by_edges;  
         
 
-def main():
+def main(db):
     SUBSCRIBED_TARGET_VEH = False;
     """
         Parse the Network file
@@ -146,7 +215,7 @@ def main():
         Run Simulation & Extract (Lon & Lat) of the Trip
     """
     traci.start(["sumo", "-c", "network/simulation.sumo.cfg", "--start"]);
-
+    tripRoute = [];
     while(traci.simulation.getMinExpectedNumber() > 0):
         traci.simulationStep();
         targetVeh = "Trip-0";
@@ -161,15 +230,31 @@ def main():
             targetVehicleHandle = traci.vehicle.getSubscriptionResults(targetVeh);
             position = targetVehicleHandle[0x42];
             [lon, lat] = traci.simulation.convertGeo(position[0], position[1]);
+            tripRoute.append([
+                trip_id,
+                "POINT("+str(lat)+" "+str(lon)+")"
+            ]);
+            # print("LatLng(", lat, ', ', lon, '),');
+    """
+        Send to Database server
+    """
+    updateTripRoute(db, trip_id, tripRoute);
 
-            """
-                Send to Database server
-            """
-            print("LatLng(", lat, ', ', lon, '),');
-    
+
+    """
+        Kindly ask server to inform clients with 
+        the new routing information.
+    """
+    nofityServer();
+
+            
     traci.close();
-
     print('Completed ... ✈ '); 
 
 if __name__ == "__main__":
-    main();
+    db = connectDB();
+    res = getCurrentTrips(db);
+    trip_id = formatedTrips(res);
+
+    if not main(db):
+        sys.exit(1)
