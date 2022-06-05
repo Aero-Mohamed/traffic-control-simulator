@@ -11,9 +11,6 @@ import sumolib
 # import requests
 
 
-# Help :
-#python main.py --odEdges odEdges.txt
-
 # Inputs
 TEST_NAME_PREFIX = '10Clients-Test1';
 NET_FILE = './../network/cu.net.xml';
@@ -46,7 +43,7 @@ SUBSCRIBED_TARGET_VEH   = False;
 def get_options(args=None):
     optParser = sumolib.options.ArgumentParser(description="Generate Route based on origin-destination points.")
     # Updated
-    optParser.add_argument("--odEdges", type=str,help="Peers of Orgigin/Destination Edges IDs Seperated by comman (,)");
+    optParser.add_argument("--odEdges", type=str,help="Peers of Orgigin/Destination Edges IDs Seperated by comman (,) Text File");
     options = optParser.parse_args(args=args);
     return options
 
@@ -100,7 +97,6 @@ def main(options):
     subprocess.run(DUAROUTER_ARGS);
     sys.stdout.flush();
 
-    # position = targetVehicleHandle[0x42];   
     print('Completed ... ✈ '); 
     return True;
 

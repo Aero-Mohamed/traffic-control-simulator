@@ -3,10 +3,11 @@ clear
 close all
 clc
 
-%% 10 Client Test-1
-% Initializing results Data
-TestName = '10 Clients';
-VehiclesPositions = [load("./10Clients-Test1/VehiclesPostion-1.mat"),load("./10Clients-Test1/VehiclesPostion-2.mat")] ;
+%% Inputs
+TEST_NAME_PREFIX = '10Clients-Test1';
+
+%% Initializing results Data
+VehiclesPositions = [load(['./' TEST_NAME_PREFIX '/VehiclesPostion-1.mat']),load(['./' TEST_NAME_PREFIX '/VehiclesPostion-2.mat'])] ;
 colors = {'*b';'.g'};
 legendText = {'Simulation 1', 'Simulation 2'};
 
@@ -36,7 +37,7 @@ end
 legend(legendText);
 error = sqrt(sum(abs(positions(1).x - positions(2).x))^2 + sum(abs(positions(1).y - positions(2).y))^2);
 error = error/max(positions(1).distance, positions(2).distance)*100;
-title(['Comparing Simulation results of ' TestName ' with Total Error of ' num2str(error) '%']);
+title(['Comparing Simulation results of ' TEST_NAME_PREFIX ' with Total Error of ' num2str(error) '%']);
 
 
 

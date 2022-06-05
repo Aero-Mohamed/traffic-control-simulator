@@ -3,8 +3,11 @@ clear
 close all
 clc
 import traci.constants
+%% Inputs
+TEST_NAME_PREFIX = '10Clients-Test1';
+
 %% Run Simulation
-traci.start('sumo-gui -c ./../network/simulation.sumo.cfg -r ./10Clients-Test1/routes.rou.xml --start');
+traci.start(['sumo-gui -c ./../network/simulation.sumo.cfg -r ./' TEST_NAME_PREFIX '/routes.rou.xml --start']);
 
 SIM_STEPS = [1 3600];
 beginTime = SIM_STEPS(1);
