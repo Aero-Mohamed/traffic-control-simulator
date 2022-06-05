@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2022-03-01 01:58:14 by Eclipse SUMO duarouter Version 1.10.0
+<!-- generated on 2022-06-05 17:42:24 by Eclipse SUMO duarouter Version 1.10.0
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/duarouterConfiguration.xsd">
 
     <input>
-        <net-file value="./network/cu.net.xml"/>
+        <net-file value="./../network/cu.net.xml"/>
         <route-files value="./outputs/trips.trips.xml"/>
     </input>
 
     <output>
-        <output-file value="./outputs/routes.rou.xml"/>
-        <alternatives-output value="./outputs/routes.rou.alt.xml"/>
+        <output-file value="./../outputs/routes.rou.xml"/>
+        <alternatives-output value="./../outputs/routes.rou.alt.xml"/>
     </output>
 
     <time>
@@ -30,7 +30,7 @@
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
     <vehicle id="Trip-0" depart="0.00">
         <routeDistribution last="0">
-            <route cost="56.78" probability="1.00000000" edges="38285536#12 38285536#13 38285536#14 38285536#15 38285536#16 38285536#17 38285536#18 38284647#13 38284647#14 38284647#15 38284647#16 689928611#0 689928611#1 689928611#2 689928611#3 689928611#4 689928611#5 689928611#6 689731672#4 24764150#0 24764150#1 24764150#2 24764150#3"/>
+            <route cost="59.83" probability="1.00000000" edges="38285536#7 38285536#8 38285536#9 38285536#10 38285536#11 38285536#12 38285536#13 38285536#14 38285536#15 38285536#16 38285536#17 38285536#18 38285536#19 54733120#6 54733120#7 54733120#8 54733120#9 54733120#10 54733120#11 54733120#12 54733120#13 54733120#14 54733120#15 54733120#16 54733120#17 54733120#18 54733120#19 54733120#20 54733120#21 54733120#22 54733120#23"/>
         </routeDistribution>
     </vehicle>
 </routes>

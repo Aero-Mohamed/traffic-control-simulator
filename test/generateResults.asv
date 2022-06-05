@@ -1,0 +1,39 @@
+%% Init
+clear
+close all
+clc
+
+%% 10 Client Test-1
+% Initializing results Data
+VehiclesPositions = [load("./10Clients-Test1/VehiclesPostion-1.mat"),load("./10Clients-Test1/VehiclesPostion-2.mat")] ;
+colors = ['*b' '.g'];
+
+
+positions = [];
+for i=1:size(VehiclesPositions)
+    VehiclesPositions(i) = VehiclesPositions(i).VehiclesPosition;
+    positions = [positions struct('x', [], 'y', [], 'distance', 0)];
+end
+
+for i=1:size(VehiclesPositions)
+    keys = VehiclesPositions(i).keys;
+    for i = 1:VehiclesPositions(i).Count
+        hold on;
+        posti = VehiclesPositions(i);
+        position = posti(cell2mat(keys(i)));
+        for i=1:size(position)-1
+            positions(i).distance = position(i).distance + sqrt((position(i, 1) - position(i+1, 1))^2 + (position(i+1, 2) - position(i+1, 2))^2);
+        end
+        position(i).x = [positions(i).x; position(:, 1)];
+        position(i).y = [positions(i).y; position(:, 2)];
+    end
+    hold on;
+    plot(positions(i).x, positions(i).y, colors(i));
+end
+legend({'Simulation 1', 'Simulation 2'});
+error = sqrt(sum(abs(positions(.x - position2.x))^2 + sum(abs(position1.y - position2.y))^2);
+title(['Comparing Simulation results of 10 Clients with Total Error of ' num2str(error/max(position1.distance, position2.distance)*100) '%']);
+
+
+
+
