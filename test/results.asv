@@ -38,13 +38,12 @@ for w=1:size(VehiclesPositions, 2)
 end
 legend(legendText);
 error = 0;
-maxDistance = 0;
 for w=1:size(VehiclesPositions, 2)-1
     error = error + sqrt(sum(abs(positions(w).x - positions(w+1).x))^2 + sum(abs(positions(w).y - positions(w+1).y))^2);
-    maxDistance = max(positions(w).distance, positions(w+1).distance);
 end
-error = error/maxDistance*100;
-title(['Simulation of ' TEST_NAME_PREFIX ' with Total Error of ' num2str(error) '% of total travel distance of ' num2str(maxDistance)]);
+max(positions(1).distance, positions(2).distance)
+error = error/*100;
+title(['Comparing Simulation results of ' TEST_NAME_PREFIX ' with Total Error of ' num2str(error) '%']);
 
 
 

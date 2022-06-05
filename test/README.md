@@ -4,6 +4,7 @@
 
 # Working Steps:
     - setup odEdge.txt File
+    
     - edit main.py variable -> [TEST_NAME_PREFIX]
     - Run: python main.py --odEdges ./10Clients-Test1/odEdges.txt
     
