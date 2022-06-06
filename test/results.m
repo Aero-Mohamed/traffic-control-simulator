@@ -8,9 +8,10 @@ TEST_NAME_PREFIX = 'Random-Trips';
 
 VehiclesPositions = [...
     load(['./' TEST_NAME_PREFIX '/results-1.mat']),...
-    load(['./' TEST_NAME_PREFIX '/results-2.mat'])] ;
-colors = {'+b';'.g'};
-legendText = {'Simulation 1', 'Simulation 2'};
+    load(['./' TEST_NAME_PREFIX '/results-2.mat']),...
+    load(['./' TEST_NAME_PREFIX '/results-1.mat'])] ;
+colors = {'*r';'+b';'.g'};
+legendText = {'Simulation 1', 'Simulation 2', 'Simulation 3'};
 
 %% Initializing results Data
 positions = [];
