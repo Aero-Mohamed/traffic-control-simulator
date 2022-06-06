@@ -4,7 +4,7 @@ close all
 clc
 import traci.constants
 %% Inputs
-TEST_NAME_PREFIX = '10Clients-Test1';
+TEST_NAME_PREFIX = 'Random-Trips';
 
 %% Run Simulation
 traci.start(['sumo-gui -c ./../network/simulation.sumo.cfg -r ./' TEST_NAME_PREFIX '/routes.rou.xml --start']);

@@ -4,15 +4,15 @@ close all
 clc
 
 %% Inputs
-TEST_NAME_PREFIX = '10Clients-Test1';
+TEST_NAME_PREFIX = 'Random-Trips';
+
+VehiclesPositions = [...
+    load(['./' TEST_NAME_PREFIX '/results-1.mat']),...
+    load(['./' TEST_NAME_PREFIX '/results-2.mat'])] ;
+colors = {'+b';'.g'};
+legendText = {'Simulation 1', 'Simulation 2'};
 
 %% Initializing results Data
-VehiclesPositions = [load(['./' TEST_NAME_PREFIX '/VehiclesPostion-1.mat']),...
-    load(['./' TEST_NAME_PREFIX '/VehiclesPostion-2.mat']),...
-    load(['./' TEST_NAME_PREFIX '/VehiclesPostion-2.mat'])] ;
-colors = {'*r';'+b';'.g'};
-legendText = {'Simulation 1', 'Simulation 2', 'Simulation 3'};
-
 positions = [];
 for i=1:size(VehiclesPositions, 2)
     positions = [positions struct('x', [], 'y', [], 'distance', 0)];
@@ -45,7 +45,5 @@ for w=1:size(VehiclesPositions, 2)-1
 end
 error = error/maxDistance*100;
 title(['Simulation of ' TEST_NAME_PREFIX ' with Total Error of ' num2str(error) '% of total travel distance of ' num2str(maxDistance)]);
-
-
 
 
