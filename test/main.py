@@ -1,7 +1,8 @@
 import sys
-
+import random
 import subprocess
 import os
+from xml.dom import minidom
 if 'SUMO_HOME' in os.environ:
     sys.path.append(os.path.join(os.environ['SUMO_HOME'], 'tools'));
     
@@ -12,8 +13,9 @@ import sumolib
 
 
 # Inputs
-TEST_NAME_PREFIX = '10Clients-Test1';
+TEST_NAME_PREFIX = '50PercentClient';
 NET_FILE = './../network/cu.net.xml';
+RANDOM_TRIP_FILE = './randomTrips.rou.xml';
 OUTPUT_TRIP_FILE = './'+TEST_NAME_PREFIX+'/trips.trips.xml';
 
 # Setup Folders 🧮 
@@ -44,6 +46,7 @@ def get_options(args=None):
     optParser = sumolib.options.ArgumentParser(description="Generate Route based on origin-destination points.")
     # Updated
     optParser.add_argument("--odEdges", type=str,help="Peers of Orgigin/Destination Edges IDs Seperated by comman (,) Text File");
+    optParser.add_argument("--clientPercentage", type=int,help="Percentage of Client on the network");
     options = optParser.parse_args(args=args);
     return options
 
@@ -74,6 +77,28 @@ def main(options):
     """
     print("Generating Trips ⚙ ");
     trips = inputOptionODEdge2Arr(options.odEdges);
+    clientPercentage = options.clientPercentage;
+    addationalTripsCount = int((100 - clientPercentage) * len(trips) / clientPercentage);
+    print('RequiredRandom  = '+ str(addationalTripsCount));
+
+    RandomTripsOriginDestList = [];
+    randomTripsFILE = minidom.parse(RANDOM_TRIP_FILE);
+    RTF_routes = randomTripsFILE.getElementsByTagName('routes')
+    RTF_vehicle = RTF_routes[0].getElementsByTagName('vehicle');
+    for idx in range(0, len(RTF_vehicle)):
+        vRoute = RTF_vehicle[idx].getElementsByTagName('route');
+        vRoute = vRoute[0];
+        vRoute = vRoute.getAttribute('edges').split(' ');
+        origin = vRoute[0];
+        dest = vRoute[-1];
+        RandomTripsOriginDestList.append([origin, dest]);
+        
+    random.shuffle(RandomTripsOriginDestList);
+    additionalTrips = RandomTripsOriginDestList[0: addationalTripsCount];
+    print('Clients = '+ str(len(trips)));
+    print('Random  = '+ str(len(additionalTrips)));
+    trips = trips + additionalTrips;
+
     with open(OUTPUT_TRIP_FILE, 'w') as fouttrips:
         sumolib.writeXMLHeader(fouttrips, "$Id$", "routes");
         for idx,trip in enumerate(trips):
@@ -84,6 +109,7 @@ def main(options):
             combined_attrs = attrFrom + attrTo;
             fouttrips.write('    <trip id="%s" depart="%.2f"%s/>\n' % (
                         label, depart, combined_attrs))
+
         fouttrips.write("</routes>\n");
 
 
