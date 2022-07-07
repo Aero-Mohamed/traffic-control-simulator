@@ -13,7 +13,7 @@ import sumolib
 
 
 # Inputs
-TEST_NAME_PREFIX = '50PercentClient';
+TEST_NAME_PREFIX = '45PercentClient';
 NET_FILE = './../network/cu.net.xml';
 RANDOM_TRIP_FILE = './randomTrips.rou.xml';
 OUTPUT_TRIP_FILE = './'+TEST_NAME_PREFIX+'/trips.trips.xml';

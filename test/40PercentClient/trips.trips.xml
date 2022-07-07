@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- generated on 2022-07-07 12:15:41.340037 by main.py v1_10_0+0000-83496a5972
+  options: <doubleminus>odEdges ./odEdges.txt <doubleminus>clientPercentage 40
+-->
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <trip id="Trip-1" depart="0.00" from="38285536#7" to="54733120#23"/>
+    <trip id="Trip-2" depart="0.00" from="-46970326#4" to="54733120#22"/>
+    <trip id="Trip-3" depart="0.00" from="153834046#8" to="510256968"/>
+    <trip id="Trip-4" depart="0.00" from="-38284622#0" to="-725809134#7"/>
+    <trip id="Trip-5" depart="0.00" from="50219737#0" to="724687136#0"/>
+    <trip id="Trip-6" depart="0.00" from="689928611#1" to="510256970#6"/>
+    <trip id="Trip-7" depart="0.00" from="153834046#5" to="510256970#0"/>
+    <trip id="Trip-8" depart="0.00" from="28856894#3" to="-48981675#2"/>
+    <trip id="Trip-9" depart="0.00" from="510256970#2" to="38285536#5"/>
+    <trip id="Trip-10" depart="0.00" from="38427387#0" to="510256970#7"/>
+    <trip id="Trip-11" depart="0.00" from="668509993#1" to="-688592562#0"/>
+    <trip id="Trip-12" depart="0.00" from="-28856981#3" to="719320360#2"/>
+    <trip id="Trip-13" depart="0.00" from="38421931#5" to="46970283#8"/>
+    <trip id="Trip-14" depart="0.00" from="725768768#27" to="725768780"/>
+    <trip id="Trip-15" depart="0.00" from="32501674#0" to="38427034#1"/>
+    <trip id="Trip-16" depart="0.00" from="24893934#2" to="-38284622#2"/>
+    <trip id="Trip-17" depart="0.00" from="46970283#8" to="-233125856#2"/>
+    <trip id="Trip-18" depart="0.00" from="54718367#0" to="153834046#16"/>
+    <trip id="Trip-19" depart="0.00" from="32501665#3" to="724687129#0"/>
+    <trip id="Trip-20" depart="0.00" from="24764150#2" to="28856632#8"/>
+    <trip id="Trip-21" depart="0.00" from="38421935#0" to="34888545#0"/>
+    <trip id="Trip-22" depart="0.00" from="30071527" to="24764150#2"/>
+    <trip id="Trip-23" depart="0.00" from="719320360#7" to="686638877#0"/>
+    <trip id="Trip-24" depart="0.00" from="689731686#1" to="38285536#1"/>
+    <trip id="Trip-25" depart="0.00" from="686644927#4" to="725384438"/>
+</routes>

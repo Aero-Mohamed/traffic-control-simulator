@@ -4,14 +4,14 @@ close all
 clc
 
 %% Inputs
-TEST_NAME_PREFIX = 'Random-Trips';
+TEST_NAME_PREFIX = '25PercentClient';
+TRAFFIC_FREE = '100PercentClient';
 
 VehiclesPositions = [...
     load(['./' TEST_NAME_PREFIX '/results-1.mat']),...
-    load(['./' TEST_NAME_PREFIX '/results-2.mat']),...
-    load(['./' TEST_NAME_PREFIX '/results-1.mat'])] ;
-colors = {'*r';'+b';'.g'};
-legendText = {'Simulation 1', 'Simulation 2', 'Simulation 3'};
+    load(['./' TRAFFIC_FREE '/results-1.mat'])] ;
+colors = {'*g';'+b';'.g'};
+legendText = {TEST_NAME_PREFIX, '100 Precent Client (Traffic Free)'};
 
 %% Initializing results Data
 positions = [];
@@ -28,7 +28,7 @@ for w=1:size(VehiclesPositions, 2)
         hold on;
         position = VehiclesPos(cell2mat(keys(j)));
         for i=1:size(position, 1)-1
-            distance = sqrt((position(i, 1) - position(i+1, 1))^2 + (position(i+1, 2) - position(i+1, 2))^2);
+            distance = sqrt((position(i, 1) - position(i+1, 1))^2 + (position(i, 2) - position(i+1, 2))^2);
             positions(w).distance = positions(w).distance + distance;
         end
         positions(w).x = [positions(w).x; position(:, 1)];
@@ -38,13 +38,25 @@ for w=1:size(VehiclesPositions, 2)
     plot(positions(w).x, positions(w).y, colors{w});
 end
 legend(legendText);
-error = 0;
-maxDistance = 0;
+absError = 0; sumError = 0; maxDistance = 0;
 for w=1:size(VehiclesPositions, 2)-1
-    error = error + sqrt(sum(abs(positions(w).x - positions(w+1).x))^2 + sum(abs(positions(w).y - positions(w+1).y))^2);
+    % Fix matrix dimensions if required
+    sim1Size = size(positions(w).x, 1);
+    sim2Size = size(positions(w+1).x, 1);
+    additionalDimensionFixElements = ones(abs(sim1Size - sim2Size), 1);
+    if(sim1Size < sim2Size)
+        positions(w).x = [positions(w).x; additionalDimensionFixElements .* positions(w+1).x(end)];
+        positions(w).y = [positions(w).y; additionalDimensionFixElements .* positions(w+1).y(end)];
+    else
+        positions(w+1).x = [positions(w+1).x; additionalDimensionFixElements .* positions(w).x(end)];
+        positions(w+1).y = [positions(w+1).y; additionalDimensionFixElements .* positions(w).y(end)];
+    end
+    absError = absError + sqrt(sum(abs(positions(w).x - positions(w+1).x))^2 + sum(abs(positions(w).y - positions(w+1).y))^2);
+    sumError = sumError + sqrt(sum(positions(w).x - positions(w+1).x)^2 + sum(positions(w).y - positions(w+1).y)^2);
     maxDistance = max(positions(w).distance, positions(w+1).distance);
 end
-error = error/maxDistance*100;
-title(['Simulation of ' TEST_NAME_PREFIX ' with Total Error of ' num2str(error) '% of total travel distance of ' num2str(maxDistance)]);
+absError = round(absError/maxDistance*100);
+sumError = round(sumError/maxDistance*100);
+title(['Simulation of ' TEST_NAME_PREFIX ' with Total abs Error of ' num2str(absError) '%  and distance sum error of ' num2str(sumError) '% of total travel distance of ' num2str(round(maxDistance))]);
 
 

@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2022-06-06 15:52:34 by Eclipse SUMO duarouter Version 1.10.0
+<!-- generated on 2022-07-07 11:17:22 by Eclipse SUMO duarouter Version 1.10.0
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/duarouterConfiguration.xsd">
 
     <input>
         <net-file value="./../network/cu.net.xml"/>
-        <route-files value="./10Clients-Test1/trips.trips.xml"/>
+        <route-files value="./100PercentClient/trips.trips.xml"/>
     </input>
 
     <output>
-        <output-file value="./10Clients-Test1/routes.rou.xml"/>
-        <alternatives-output value="./10Clients-Test1/routes.rou.alt.xml"/>
+        <output-file value="./100PercentClient/routes.rou.xml"/>
+        <alternatives-output value="./100PercentClient/routes.rou.alt.xml"/>
     </output>
 
     <time>
