@@ -8,14 +8,14 @@ TEST_NAME_PREFIX = '2PercentClient';
 TRAFFIC_FREE = '2PercentClient';
 
 VehiclesPositions = [...
-    load(['./' TEST_NAME_PREFIX '/Optimization-results-2.mat']),...
+    load(['./' TEST_NAME_PREFIX '/Optimization-results-3.mat']),...
     load(['./' TRAFFIC_FREE '/results-1.mat'])] ;
 colors = {'*g';'+b';'.g'};
-legendText = {'Optimized Routes', 'Shortest Path Only'};
+legendText = {'Optimized Routes 3', 'Shortest Path Only'};
 
 %% Initializing results Data
 x_ = [1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10];
-y_ = zeros(1,10);
+y_ = zeros(1,20);
 positions = [];
 for i=1:size(VehiclesPositions, 2)
     positions = [positions struct('x', [], 'y', [], 'distance', 0)];
@@ -70,8 +70,8 @@ title(['Simulation of ' TEST_NAME_PREFIX ' with Total abs Error of ' num2str(abs
 
 %% Travel Time 
 figure;
-legendText = {'Optimized Routes', 'Shortest Path Only'};
 scatter(x_(1:10),y_(1:10))
 hold on
 scatter(x_(11:20),y_(11:20))
+%scatter(x_(21:30),y_(21:30))
 legend(legendText);

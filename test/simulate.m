@@ -37,6 +37,7 @@ end
 %% Subscribe to All Edges 
 edges = traci.edge.getIDList();
 for k=1:length(edges)
+    EdgeDensities(edges{k}) = 0;
     traci.edge.subscribe(edges{k}, {...
         %'0x13', ... % Occupancy
         '0x10' ... % lastStepVehiclesNumber
@@ -51,7 +52,7 @@ while traci.simulation.getMinExpectedNumber() > 0
     % Update Edge Effort to be its current density
     % Ignore First Step
     
-    if everyTenSteps == 10
+    if everyTenSteps == 1
         for e=1:length(edges)
             edge_length_laneNo = edgeLength(edges{e});
 
@@ -66,7 +67,7 @@ while traci.simulation.getMinExpectedNumber() > 0
             edgeDensity = (vehicleNo)/( edge_i_length * edge_i_lanes );
             
             % Update Effort
-            eff = (4*edgeDensity + edge_i_length)/5;
+            eff = (edgeDensity + edge_i_length);
             traci.edge.setEffort(edges{e}, eff);
                         
             if isKey(EdgeDensities, edges{e})
@@ -103,7 +104,7 @@ while traci.simulation.getMinExpectedNumber() > 0
        traci.simulation.getDepartedNumber();
    
    i = i + 1;
-   ignoreFirstStep = 1;
+   everyTenSteps = everyTenSteps + 1;
 end
 
 %% Exit Simulation
