@@ -4,14 +4,14 @@ close all
 clc
 
 %% Inputs
-TEST_NAME_PREFIX = '2PercentClient';
-TRAFFIC_FREE = '2PercentClient';
+TEST_NAME_PREFIX = '3PercentClient';
+TRAFFIC_FREE = '3PercentClient';
 
 VehiclesPositions = [...
-    load(['./' TEST_NAME_PREFIX '/Optimization-results-3.mat']),...
+    load(['./' TEST_NAME_PREFIX '/Optimization-results-2.mat']),...
     load(['./' TRAFFIC_FREE '/results-1.mat'])] ;
 colors = {'*g';'+b';'.g'};
-legendText = {'Optimized Routes 3', 'Shortest Path Only'};
+legendText = {'Optimized Routes 2', 'Shortest Path Only'};
 
 %% Initializing results Data
 x_ = [1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10];

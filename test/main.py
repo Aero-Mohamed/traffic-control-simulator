@@ -13,7 +13,7 @@ import sumolib
 
 
 # Inputs
-TEST_NAME_PREFIX = '45PercentClient';
+TEST_NAME_PREFIX = '6PercentClient';
 NET_FILE = './../network/cu.net.xml';
 RANDOM_TRIP_FILE = './randomTrips.rou.xml';
 OUTPUT_TRIP_FILE = './'+TEST_NAME_PREFIX+'/trips.trips.xml';
@@ -61,7 +61,9 @@ def inputOptionODEdge2Arr(odEdgesFile):
         Lines = fp.readlines();
         for line in Lines:
             if(line != "\n"):
-                odEdges.append(line.strip().split(","));
+                ele_ = line.strip().split(",");
+                ele_.append(0);
+                odEdges.append(ele_);
     return odEdges;
 
 
@@ -85,16 +87,33 @@ def main(options):
     randomTripsFILE = minidom.parse(RANDOM_TRIP_FILE);
     RTF_routes = randomTripsFILE.getElementsByTagName('routes')
     RTF_vehicle = RTF_routes[0].getElementsByTagName('vehicle');
+    
     for idx in range(0, len(RTF_vehicle)):
+        departure = RTF_vehicle[idx].getAttribute('depart');
         vRoute = RTF_vehicle[idx].getElementsByTagName('route');
         vRoute = vRoute[0];
         vRoute = vRoute.getAttribute('edges').split(' ');
         origin = vRoute[0];
         dest = vRoute[-1];
-        RandomTripsOriginDestList.append([origin, dest]);
+        RandomTripsOriginDestList.append([origin, dest, departure]);
         
-    random.shuffle(RandomTripsOriginDestList);
-    additionalTrips = RandomTripsOriginDestList[0: addationalTripsCount];
+    # random.shuffle(RandomTripsOriginDestList);
+    additionalTrips = [];
+    q = 1;
+    while(addationalTripsCount > len(additionalTrips)):
+        
+        diff = addationalTripsCount - len(additionalTrips)
+        print(diff)
+        if(q == 1):
+            additionalTrips = additionalTrips + RandomTripsOriginDestList[0: diff];
+        else:
+            from_ = len(RandomTripsOriginDestList) - diff - 1
+            to_ = len(RandomTripsOriginDestList)-1
+            additionalTrips = additionalTrips + RandomTripsOriginDestList[from_: to_];
+        q = q + 1
+        
+        
+
     print('Clients = '+ str(len(trips)));
     print('Random  = '+ str(len(additionalTrips)));
     trips = trips + additionalTrips;
@@ -108,7 +127,7 @@ def main(options):
             attrTo = ' to="%s"' % trip[1];
             combined_attrs = attrFrom + attrTo;
             fouttrips.write('    <trip id="%s" depart="%.2f"%s/>\n' % (
-                        label, depart, combined_attrs))
+                        label, float(trip[2]), combined_attrs))
 
         fouttrips.write("</routes>\n");
 
