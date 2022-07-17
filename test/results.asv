@@ -14,7 +14,7 @@ colors = {'*g';'+b';'.g'};
 legendText = {'Optimized Routes', 'Shortest Path Only'};
 
 %% Initializing results Data
-x_ = [1 2 3 4 5 6 7 8 9 10 1 2 3 4 5 6 7 8 9 10];
+x_ = [1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 9 10 10];
 y_ = zeros(1,10);
 positions = [];
 for i=1:size(VehiclesPositions, 2)
@@ -33,12 +33,9 @@ for w=1:size(VehiclesPositions, 2)
             distance = sqrt((position(i, 1) - position(i+1, 1))^2 + (position(i, 2) - position(i+1, 2))^2);
             positions(w).distance = positions(w).distance + distance;
         end
-        
-        y_((10*w)-10+j) = size(position(:, 1), 1);
-        
         positions(w).x = [positions(w).x; position(:, 1)];
         positions(w).y = [positions(w).y; position(:, 2)];
-        
+        y_(w*j) = size(positions(w).x, 1);
     end
     hold on;
     plot(positions(w).x, positions(w).y, colors{w});
@@ -66,12 +63,3 @@ sumError = round(sumError/maxDistance*100);
 title(['Simulation of ' TEST_NAME_PREFIX ' with Total abs Error of ' num2str(absError) '%  and distance sum error of ' num2str(sumError) '% of total travel distance of ' num2str(round(maxDistance))]);
 
 
-
-
-%% Travel Time 
-figure;
-legendText = {'Optimized Routes', 'Shortest Path Only'};
-scatter(x_(1:10),y_(1:10))
-hold on
-scatter(x_(11:20),y_(11:20))
-legend(legendText);

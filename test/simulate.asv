@@ -14,7 +14,7 @@ beginTime = SIM_STEPS(1);
 duration =  SIM_STEPS(2);
 endTime =  SIM_STEPS(1) +  SIM_STEPS(2) - 1;
 vehicleNumberPerTimeStep = zeros(1, duration);
-everyTenSteps = 0;
+ignoreFirstStep = 0;
 ClientVehicleIDList = {'Trip-1', 'Trip-2', 'Trip-3', 'Trip-4', 'Trip-5', 'Trip-6', 'Trip-7', 'Trip-8', 'Trip-9', 'Trip-10'};
 
 VehiclesPosition = containers.Map;
@@ -50,34 +50,24 @@ while traci.simulation.getMinExpectedNumber() > 0
     
     % Update Edge Effort to be its current density
     % Ignore First Step
-    
-    if everyTenSteps == 10
+    if ignoreFirstStep == 1
         for e=1:length(edges)
-            edge_length_laneNo = edgeLength(edges{e});
-
             % retreive edge subscription data
             edgeData = traci.edge.getSubscriptionResults(edges{e});
             %occupancy = edgeData('0x13');
             %effort = edgeData('0x59');
             vehicleNo = edgeData('0x10');
-            %vehicleMeanLength = edgeData('0x15');
-            edge_i_length = edge_length_laneNo(1);
-            edge_i_lanes = edge_length_laneNo(2);
-            edgeDensity = (vehicleNo)/( edge_i_length * edge_i_lanes );
-            
-            % Update Effort
-            eff = (4*edgeDensity + edge_i_length)/5;
-            traci.edge.setEffort(edges{e}, eff);
-                        
+            vehicleMeanLength = edgeData('0x15');
+            edge_length_laneNo = edgeLength(edges{e});
+
+            edgeDensity = (vehicleNo*vehicleMeanLength)/( edge_length_laneNo(1) * edge_length_laneNo(2) );
             if isKey(EdgeDensities, edges{e})
                 EdgeDensities(edges{e}) = [EdgeDensities(edges{e}); edgeDensity];
             else
                 EdgeDensities(edges{e}) = edgeDensity;
             end
         end
-        everyTenSteps = 0;
     end
-    
     
     
    % Client Postions
@@ -85,10 +75,6 @@ while traci.simulation.getMinExpectedNumber() > 0
    if ~isempty(VehicleIDList)
        for j = 1:length(VehicleIDList)
            if ismember(VehicleIDList{j}, ClientVehicleIDList)
-               
-               % reBuild Route by Effort
-               traci.vehicle.rerouteEffort(VehicleIDList{j});
-               
                 p = traci.vehicle.getPosition(VehicleIDList{j});
                 if isKey(VehiclesPosition ,VehicleIDList{j})
                     VehiclesPosition(VehicleIDList{j}) = [VehiclesPosition(VehicleIDList{j}); p];
